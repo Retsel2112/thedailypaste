@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Extractor</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+            background-color: #f9f9f9;
+        }
+        #inputBox {
+            width: 100%;
+            height: 400px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        #inputBox:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        #result {
+            display: none;
+            padding: 20px;
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: monospace;
+        }
+        .extracted-item {
+            display: block;
+            padding: 5px 0;
+            border-bottom: 1px dotted #ccc;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Regex Content Extractor</h2>
+    <p>Paste your text below to isolate only the <code>content</code> matches.</p>
+
+    <textarea id="inputBox" placeholder='Paste your data here...'></textarea>
+    
+    <div id="result"></div>
+
+    <script>
+        const inputBox = document.getElementById('inputBox');
+        const resultDiv = document.getElementById('result');
+
+        inputBox.addEventListener('input', () => {
+            const rawText = inputBox.value;
+            if (!rawText.trim()) return;
+
+            // The Regex: "content":"([^"]*[^\\])"
+            const regex = /"content":"([^"]*[^\\])"/g;
+            
+            // Extract all matches into an array
+            const matches = [...rawText.matchAll(regex)];
+
+            if (matches.length > 0) {
+                // UI Swap
+                inputBox.style.display = 'none';
+                resultDiv.style.display = 'block';
+
+                // Map the results: we only want the first capturing group (match[1])
+                resultDiv.innerHTML = matches
+                    .map(match => `<span class="extracted-item">${match[1]}</span>`)
+                    .join('');
+            }
+        });
+    </script>
+
+</body>
+</html>
