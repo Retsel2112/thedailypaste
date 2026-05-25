@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" 
           content="default-src 'none'; 
-                   script-src 'sha256-3dmI118BURx1Td4kngtUYF4hoKFA4o6wc/LQNVByEoU='; 
+                   script-src 'sha256-2q2AJ5lvH/cRnYvbkjclvIp3KVxkNXbYFOgl4775XA8=';
                    style-src 'unsafe-inline';">
     <title>Content Extractor</title>
     <style>
@@ -66,7 +66,7 @@
             if (!rawText.trim()) return;
 
             // The Regex: "content":"([^"]*[^\\])"
-            const regex = /"(?:content|text)":"([^"]*[^\\])"/g;
+            const regex = /"(content|text|originalUrl)":"([^"]*[^\\])"/g;
             
             // Extract all matches into an array
             const matches = [...rawText.matchAll(regex)];
@@ -77,9 +77,18 @@
                 resultDiv.style.display = 'block';
 
                 // Map the results: we only want the first capturing group (match[1])
-                resultDiv.innerHTML = matches
-                    .map(match => `<span class="extracted-item">${match[1]}</span>`)
-                    .join('');
+                resultDiv.innerHTML = matches.map(match => {
+                    const key = match[1];   // 'content', 'text', or 'originalUrl'
+                    const value = match[2]; // The actual quoted text
+
+                    if (key === 'originalUrl') {
+                        // Return a link for originalUrl
+                        return `<a href="${value}" class="extracted-item" target="_blank" rel="noopener noreferrer">${value}</a>`;
+                    } else {
+                        // Return the standard span for content or text
+                        return `<span class="extracted-item">${value}</span>`;
+                    }
+                }).join('');
             }
         });
     </script>
